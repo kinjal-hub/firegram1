@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Grid, Container, Typography } from '@mui/material';
 import GalleryCard from '../components/GalleryCard';
-import ImageDetail from '../components/ImageDetail'; // Import the new component
+import ImageDetail from '../components/ImageDetail';
 
 const Gallery = () => {
   const [images, setImages] = useState([]);
@@ -27,6 +27,7 @@ const Gallery = () => {
     fetchGalleryData();
   }, []);
 
+  // Use item._id instead of item.id when the data comes from Mongoose
   const handleCardClick = (id) => {
     setSelectedImageId(id);
   };
@@ -63,8 +64,13 @@ const Gallery = () => {
       <Grid container spacing={4}>
         {images.length > 0 ? (
           images.map((item) => (
-            <Grid item key={item.id} xs={12} sm={6} md={4}>
-              <GalleryCard img={item.img} title={item.title} id={item.id} onClick={handleCardClick} />
+            <Grid item key={item._id} xs={12} sm={6} md={4}>
+              <GalleryCard
+                img={item.img}
+                title={item.title}
+                id={item._id} // Pass the _id to the GalleryCard
+                onClick={() => handleCardClick(item._id)} // Pass _id to the click handler
+              />
             </Grid>
           ))
         ) : (
