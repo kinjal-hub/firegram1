@@ -4,7 +4,7 @@ import { CardActionArea } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 
-const GalleryCard = ({ img, title, id, onClick }) => {
+const GalleryCard = ({ img, id, title, onClick }) => {
   return (
     <CardActionArea onClick={() => onClick(id)}>
     <Card
