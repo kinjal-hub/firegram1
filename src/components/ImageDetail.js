@@ -1,29 +1,56 @@
 import { useState, useEffect } from 'react';
-import { Container, Typography, Card, CardMedia } from '@mui/material';
+import { Container, Typography, Card, CardMedia, Button, Box } from '@mui/material'; // Import Box for layout
 
 const ImageDetail = ({ imageId, onBackClick }) => {
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchImageDetail = async () => {
-      if (!imageId) return;
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await fetch(`http://localhost:8000/api/images/${imageId}`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        setImage(data);
-      } catch (error) {
-        setError(error);
-      } finally {
-        setLoading(false);
+  // Function to fetch the image detail
+  const fetchImageDetail = async () => {
+    if (!imageId) return;
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await fetch(`http://localhost:8000/api/images/${imageId}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-    };
+      const data = await response.json();
+      setImage(data);
+    } catch (error) {
+      setError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Function to delete the image
+  const handleDeleteImage = async () => {
+    try {
+      
+      if (!window.confirm('Are you sure you want to delete this image?')) {
+        return;
+      }
+
+      const response = await fetch(`http://localhost:8000/api/images/${imageId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // If deletion is successful, navigate back to the gallery
+      onBackClick();
+
+    } catch (error) {
+      setError(error);
+      alert(`Failed to delete image: ${error.message}`); // Provide user feedback on failure
+    }
+  };
+
+  useEffect(() => {
     fetchImageDetail();
   }, [imageId]);
 
@@ -51,9 +78,15 @@ const ImageDetail = ({ imageId, onBackClick }) => {
           alt={image.title}
           style={{ maxHeight: 600, objectFit: 'contain' }}
         />
-        
       </Card>
-      <button onClick={onBackClick} style={{ marginTop: '20px' }}>Back to Gallery</button>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
+        <Button variant="contained" onClick={onBackClick}>
+          Back to Gallery
+        </Button>
+        <Button variant="contained" color="error" onClick={handleDeleteImage}>
+          Delete Image
+        </Button>
+      </Box>
     </Container>
   );
 };
